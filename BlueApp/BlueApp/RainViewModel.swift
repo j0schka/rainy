@@ -3,7 +3,7 @@ import Observation
 
 enum AppState {
     case loading
-    case raining
+    case raining(stopsIn: Int?)
     case rainIn(Int)
     case noRainSoon
     case error(String)
@@ -52,8 +52,10 @@ class RainViewModel {
                 lon: coordinate.longitude
             )
             temperature = data.temperature
-            if let minutes = data.minutesUntilRain {
-                state = minutes == 0 ? .raining : .rainIn(minutes)
+            if data.isCurrentlyRaining {
+                state = .raining(stopsIn: data.minutesUntilChange)
+            } else if let minutes = data.minutesUntilChange {
+                state = .rainIn(minutes)
             } else {
                 state = .noRainSoon
             }

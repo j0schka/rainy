@@ -1,7 +1,8 @@
 import Foundation
 
 struct WeatherData {
-    let minutesUntilRain: Int?
+    let minutesUntilChange: Int?
+    let isCurrentlyRaining: Bool
     let temperature: Double?
 }
 
@@ -40,13 +41,17 @@ enum WeatherError: Error {
 
 func fetchWeatherData(lat: Double, lon: Double) async throws -> WeatherData {
     let now = Date()
-    async let minutesResult = fetchRadarMinutes(lat: lat, lon: lon, now: now)
+    async let radarResult = fetchRadarData(lat: lat, lon: lon, now: now)
     async let tempResult = fetchTemperature(lat: lat, lon: lon, now: now)
-    let (minutes, temperature) = try await (minutesResult, tempResult)
-    return WeatherData(minutesUntilRain: minutes, temperature: temperature)
+    let (radar, temperature) = try await (radarResult, tempResult)
+    return WeatherData(
+        minutesUntilChange: radar.minutesUntilChange,
+        isCurrentlyRaining: radar.isRaining,
+        temperature: temperature
+    )
 }
 
-private func fetchRadarMinutes(lat: Double, lon: Double, now: Date) async throws -> Int? {
+private func fetchRadarData(lat: Double, lon: Double, now: Date) async throws -> (minutesUntilChange: Int?, isRaining: Bool) {
     var components = URLComponents(string: "https://api.brightsky.dev/radar")!
     components.queryItems = [
         URLQueryItem(name: "lat", value: String(format: "%.4f", lat)),
@@ -69,16 +74,26 @@ private func fetchRadarMinutes(lat: Double, lon: Double, now: Date) async throws
     let x = Int(pos.x.rounded())
     let y = Int(pos.y.rounded())
 
-    let futureFrames = result.radar.filter { $0.timestamp > now }
-    guard let rainFrame = futureFrames.first(where: { frame in
+    func hasRain(in frame: RadarRecord) -> Bool {
         guard y < frame.precipitation5.count,
               x < frame.precipitation5[y].count else { return false }
         return frame.precipitation5[y][x] > 0
-    }) else {
-        return nil
     }
 
-    return max(0, Int(rainFrame.timestamp.timeIntervalSince(now) / 60))
+    let sorted = result.radar.sorted { $0.timestamp < $1.timestamp }
+    let currentFrame = sorted.last(where: { $0.timestamp <= now }) ?? sorted.first
+    let isRaining = currentFrame.map(hasRain) ?? false
+    let futureFrames = sorted.filter { $0.timestamp > now }
+
+    if isRaining {
+        let stopFrame = futureFrames.first(where: { !hasRain(in: $0) })
+        let minutes = stopFrame.map { max(0, Int($0.timestamp.timeIntervalSince(now) / 60)) }
+        return (minutes, true)
+    } else {
+        let startFrame = futureFrames.first(where: { hasRain(in: $0) })
+        let minutes = startFrame.map { max(0, Int($0.timestamp.timeIntervalSince(now) / 60)) }
+        return (minutes, false)
+    }
 }
 
 private func fetchTemperature(lat: Double, lon: Double, now: Date) async throws -> Double? {

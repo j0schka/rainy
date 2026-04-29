@@ -12,6 +12,9 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             darkNavy.ignoresSafeArea()
+            if case .raining = viewModel.state {
+                RainView()
+            }
             VStack(spacing: 24) {
                 circleContent
                 temperatureLabel
@@ -23,6 +26,26 @@ struct ContentView: View {
             if newPhase == .active {
                 Task { await viewModel.fetchRain() }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var circleContent: some View {
+        switch viewModel.state {
+        case .loading:
+            loadingCircle
+        case .raining(let stopsIn):
+            if let stopsIn {
+                labelCircle(number: "\(stopsIn)", sub: "min")
+            } else {
+                labelCircle(number: "—", sub: nil)
+            }
+        case .rainIn(let minutes):
+            labelCircle(number: "\(minutes)", sub: "min")
+        case .noRainSoon:
+            labelCircle(number: "—", sub: nil)
+        case .error:
+            labelCircle(number: "?", sub: nil)
         }
     }
 
@@ -45,22 +68,6 @@ struct ContentView: View {
                 .foregroundStyle(.white.opacity(0.7))
         } else {
             Color.clear.frame(height: 28)
-        }
-    }
-
-    @ViewBuilder
-    private var circleContent: some View {
-        switch viewModel.state {
-        case .loading:
-            loadingCircle
-        case .raining:
-            labelCircle(number: "0", sub: "min")
-        case .rainIn(let minutes):
-            labelCircle(number: "\(minutes)", sub: "min")
-        case .noRainSoon:
-            labelCircle(number: "—", sub: nil)
-        case .error:
-            labelCircle(number: "?", sub: nil)
         }
     }
 
@@ -91,6 +98,55 @@ struct ContentView: View {
                     }
                 }
             }
+    }
+}
+
+// MARK: - Rain animation
+
+private struct RainDrop {
+    let x: CGFloat
+    let phaseOffset: Double
+    let speed: Double
+    let length: CGFloat
+    let opacity: Double
+    let drift: CGFloat
+}
+
+struct RainView: View {
+    private static let drops: [RainDrop] = (0..<90).map { _ in
+        RainDrop(
+            x: CGFloat.random(in: 0...1),
+            phaseOffset: Double.random(in: 0...1),
+            speed: Double.random(in: 0.8...1.6),
+            length: CGFloat.random(in: 18...38),
+            opacity: Double.random(in: 0.15...0.35),
+            drift: CGFloat.random(in: 0.06...0.12)
+        )
+    }
+
+    var body: some View {
+        TimelineView(.animation) { tl in
+            let t = tl.date.timeIntervalSinceReferenceDate
+            Canvas { ctx, size in
+                for drop in Self.drops {
+                    let phase = ((t / drop.speed) + drop.phaseOffset)
+                        .truncatingRemainder(dividingBy: 1.0)
+                    let y = CGFloat(phase) * (size.height + drop.length) - drop.length
+                    let x = drop.x * size.width + y * drop.drift
+
+                    var path = Path()
+                    path.move(to: CGPoint(x: x, y: y))
+                    path.addLine(to: CGPoint(x: x + drop.length * drop.drift,
+                                            y: y + drop.length))
+                    ctx.stroke(
+                        path,
+                        with: .color(.white.opacity(drop.opacity)),
+                        lineWidth: 1.5
+                    )
+                }
+            }
+        }
+        .ignoresSafeArea()
     }
 }
 
