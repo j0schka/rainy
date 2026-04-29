@@ -164,28 +164,11 @@ struct ContentView: View {
 
 private struct AppHeaderView: View {
     var body: some View {
-        HStack {
-            VStack(spacing: 5) {
-                ForEach(0..<3, id: \.self) { _ in
-                    Rectangle()
-                        .fill(.white.opacity(0.6))
-                        .frame(width: 16, height: 2)
-                        .cornerRadius(1)
-                }
-            }
-            .frame(width: 40, height: 40)
-            .background(.white.opacity(0.08))
-            .cornerRadius(12)
-
-            Spacer()
-            Text("MinutesToRain")
-                .font(.system(size: 17, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
-            Spacer()
-            Color.clear.frame(width: 40, height: 40)
-        }
-        .padding(.horizontal, 24)
-        .padding(.top, 58)
+        Text("MinutesToRain")
+            .font(.system(size: 17, weight: .bold, design: .rounded))
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.top, 58)
     }
 }
 
