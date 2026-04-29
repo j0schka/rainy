@@ -15,6 +15,7 @@ struct ContentView: View {
             VStack(spacing: 24) {
                 circleContent
                 temperatureLabel
+                noRainLabel
             }
         }
         .onAppear { viewModel.startUpdating() }
@@ -22,6 +23,17 @@ struct ContentView: View {
             if newPhase == .active {
                 Task { await viewModel.fetchRain() }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var noRainLabel: some View {
+        if case .noRainSoon = viewModel.state {
+            Text("no rain in sight")
+                .font(.system(size: 18, weight: .regular, design: .rounded))
+                .foregroundStyle(.white.opacity(0.5))
+        } else {
+            Color.clear.frame(height: 18)
         }
     }
 
