@@ -49,10 +49,10 @@ Coverage is limited to Germany and neighbouring regions served by the DWD radar 
 ## Project structure
 
 ```
-BlueApp/
-└── BlueApp/
+MinutesToRain/
+└── MinutesToRain/
     ├── RainyApp.swift          — app entry point
-    ├── ContentView.swift       — UI: background, circle, labels
+    ├── ContentView.swift       — UI: background, circle, labels, rain animation
     ├── RainViewModel.swift     — state machine, refresh loop
     ├── LocationManager.swift   — CoreLocation wrapper
     └── WeatherService.swift    — Bright Sky API calls

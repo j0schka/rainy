@@ -16,9 +16,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A1000007 /* BlueApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlueApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1000004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A1000006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A1000007 /* Rainy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rainy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1000024 /* RainyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainyApp.swift; sourceTree = "<group>"; };
 		A1000025 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		A1000026 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
@@ -36,7 +36,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A1000009 /* BlueApp */ = {
+		A1000009 /* MinutesToRain */ = {
 			isa = PBXGroup;
 			children = (
 				A1000024 /* RainyApp.swift */,
@@ -46,13 +46,13 @@
 				A1000027 /* RainViewModel.swift */,
 				A1000006 /* Assets.xcassets */,
 			);
-			path = BlueApp;
+			path = MinutesToRain;
 			sourceTree = "<group>";
 		};
 		A100000A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A1000007 /* BlueApp.app */,
+				A1000007 /* Rainy.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -60,7 +60,7 @@
 		A100000B = {
 			isa = PBXGroup;
 			children = (
-				A1000009 /* BlueApp */,
+				A1000009 /* MinutesToRain */,
 				A100000A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -68,9 +68,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A100000C /* BlueApp */ = {
+		A100000C /* MinutesToRain */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A100000D /* Build configuration list for PBXNativeTarget "BlueApp" */;
+			buildConfigurationList = A100000D /* Build configuration list for PBXNativeTarget "MinutesToRain" */;
 			buildPhases = (
 				A100000E /* Sources */,
 				A1000008 /* Frameworks */,
@@ -80,9 +80,9 @@
 			);
 			dependencies = (
 			);
-			name = BlueApp;
-			productName = BlueApp;
-			productReference = A1000007 /* BlueApp.app */;
+			name = MinutesToRain;
+			productName = MinutesToRain;
+			productReference = A1000007 /* Rainy.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -100,7 +100,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A1000011 /* Build configuration list for PBXProject "BlueApp" */;
+			buildConfigurationList = A1000011 /* Build configuration list for PBXProject "MinutesToRain" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -113,7 +113,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A100000C /* BlueApp */,
+				A100000C /* MinutesToRain */,
 			);
 		};
 /* End PBXProject section */
@@ -269,6 +269,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = ZR4H9PTM48;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Rainy needs your location to check local rain forecasts.";
@@ -298,6 +299,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = ZR4H9PTM48;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Rainy needs your location to check local rain forecasts.";
@@ -322,7 +324,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A100000D /* Build configuration list for PBXNativeTarget "BlueApp" */ = {
+		A100000D /* Build configuration list for PBXNativeTarget "MinutesToRain" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1000014 /* Debug */,
@@ -331,7 +333,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1000011 /* Build configuration list for PBXProject "BlueApp" */ = {
+		A1000011 /* Build configuration list for PBXProject "MinutesToRain" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1000012 /* Debug */,
@@ -341,7 +343,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
 	};
 	rootObject = A1000010 /* Project object */;
 }
