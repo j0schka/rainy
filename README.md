@@ -1,4 +1,4 @@
-# Rainy
+# MinutesToRain
 
 A minimal iOS app that answers one question: **how many minutes until it rains?**
 
@@ -8,7 +8,7 @@ Dark navy background. A light blue circle. A number inside it.
 
 ## How it works
 
-On launch, Rainy requests your GPS location and fetches precipitation radar data from [Bright Sky](https://brightsky.dev) — a free, open API powered by the German Weather Service (DWD). The radar has **1 km spatial resolution** and **5-minute time slots**, giving timing accuracy of roughly ±5 minutes.
+On launch, MinutesToRain requests your GPS location and fetches precipitation radar data from [Bright Sky](https://brightsky.dev) — a free, open API powered by the German Weather Service (DWD). The radar has **1 km spatial resolution** and **5-minute time slots**, giving timing accuracy of roughly ±5 minutes.
 
 The current temperature is shown below the circle, fetched from the same service.
 
@@ -18,13 +18,14 @@ Data refreshes automatically every 5 minutes, and again whenever the app returns
 
 ## Display states
 
-| Circle shows | Meaning |
-|---|---|
-| Pulsing circle | App is loading — waiting for GPS or the API response |
-| **42** min | Rain expected in 42 minutes |
-| **0** min | It is raining right now |
-| **—** | No rain detected in the next 2 hours ("no rain in sight" appears below) |
-| **?** | Something went wrong — location permission was denied, or the API could not be reached |
+| Circle | Background | Meaning |
+|---|---|---|
+| Pulsing | — | Loading — waiting for GPS or the API response |
+| **35** min | Calm | Dry — rain expected in 35 minutes |
+| **12** min | Rain animation | Currently raining — stops in approximately 12 minutes |
+| **—** | Rain animation | Currently raining — no stop detected in the next 2 hours |
+| **—** + "no rain in sight" | Calm | Dry — no rain detected in the next 2 hours |
+| **?** | — | Error — location permission was denied, or the API could not be reached |
 
 The temperature below the circle disappears in the `?` and loading states, since no data was retrieved.
 
