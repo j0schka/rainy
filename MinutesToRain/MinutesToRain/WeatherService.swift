@@ -4,10 +4,12 @@ struct WeatherData {
     let minutesUntilChange: Int?
     let isCurrentlyRaining: Bool
     let temperature: Double?
+    let weatherIcon: String?
 }
 
 private struct WeatherRecord: Decodable {
     let temperature: Double?
+    let icon: String?
 }
 private struct WeatherResponse: Decodable {
     let weather: [WeatherRecord]
@@ -43,11 +45,12 @@ func fetchWeatherData(lat: Double, lon: Double) async throws -> WeatherData {
     let now = Date()
     async let radarResult = fetchRadarData(lat: lat, lon: lon, now: now)
     async let tempResult = fetchTemperature(lat: lat, lon: lon, now: now)
-    let (radar, temperature) = try await (radarResult, tempResult)
+    let (radar, weather) = try await (radarResult, tempResult)
     return WeatherData(
         minutesUntilChange: radar.minutesUntilChange,
         isCurrentlyRaining: radar.isRaining,
-        temperature: temperature
+        temperature: weather.temperature,
+        weatherIcon: weather.icon
     )
 }
 
@@ -96,7 +99,7 @@ private func fetchRadarData(lat: Double, lon: Double, now: Date) async throws ->
     }
 }
 
-private func fetchTemperature(lat: Double, lon: Double, now: Date) async throws -> Double? {
+private func fetchTemperature(lat: Double, lon: Double, now: Date) async throws -> (temperature: Double?, icon: String?) {
     var components = URLComponents(string: "https://api.brightsky.dev/weather")!
     components.queryItems = [
         URLQueryItem(name: "lat", value: String(format: "%.4f", lat)),
@@ -106,12 +109,13 @@ private func fetchTemperature(lat: Double, lon: Double, now: Date) async throws 
     ]
 
     let (data, response) = try await URLSession.shared.data(from: components.url!)
-    guard (response as? HTTPURLResponse)?.statusCode == 200 else { return nil }
+    guard (response as? HTTPURLResponse)?.statusCode == 200 else { return (nil, nil) }
 
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .iso8601
     let result = try? decoder.decode(WeatherResponse.self, from: data)
-    return result?.weather.first?.temperature
+    let record = result?.weather.first
+    return (record?.temperature, record?.icon)
 }
 
 private func iso8601(_ date: Date) -> String {

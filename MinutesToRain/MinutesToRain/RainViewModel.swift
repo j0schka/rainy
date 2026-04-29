@@ -13,6 +13,7 @@ enum AppState {
 class RainViewModel {
     var state: AppState = .loading
     var temperature: Double? = nil
+    var weatherIcon: String? = nil
     private var locationManager = LocationManager()
     private var refreshTask: Task<Void, Never>?
 
@@ -52,6 +53,7 @@ class RainViewModel {
                 lon: coordinate.longitude
             )
             temperature = data.temperature
+            weatherIcon = data.weatherIcon
             if data.isCurrentlyRaining {
                 state = .raining(stopsIn: data.minutesUntilChange)
             } else if let minutes = data.minutesUntilChange {

@@ -1,5 +1,24 @@
 import SwiftUI
 
+// MARK: - Weather icon mapping
+
+private enum WeatherIcon {
+    case clearDay, clearNight, partlyCloudy, cloudy, other
+
+    init(from string: String?) {
+        switch string {
+        case "clear-day":                              self = .clearDay
+        case "clear-night":                            self = .clearNight
+        case "partly-cloudy-day", "partly-cloudy-night": self = .partlyCloudy
+        case "cloudy":                                 self = .cloudy
+        default:                                       self = .other
+        }
+    }
+
+    var isSunny: Bool { self == .clearDay || self == .clearNight }
+    var isPartlyCloudy: Bool { self == .partlyCloudy }
+}
+
 // MARK: - Design tokens
 
 private extension Color {
@@ -98,25 +117,45 @@ struct ContentView: View {
     @ViewBuilder
     private var illustrationView: some View {
         switch viewModel.state {
-        case .noRainSoon:  SunView()
-        case .loading:     CloudView(mode: .loading)
-        case .raining:     CloudView(mode: .raining)
-        case .rainIn:      CloudView(mode: .rainIn)
-        case .error:       CloudView(mode: .error)
+        case .noRainSoon:
+            let icon = WeatherIcon(from: viewModel.weatherIcon)
+            switch icon {
+            case .clearDay, .clearNight: SunView()
+            case .partlyCloudy:          PartlyCloudyView()
+            default:                     CloudView(mode: .calm)
+            }
+        case .loading:  CloudView(mode: .loading)
+        case .raining:  CloudView(mode: .raining)
+        case .rainIn:   CloudView(mode: .rainIn)
+        case .error:    CloudView(mode: .error)
         }
     }
 
     private var glowColor: Color {
         switch viewModel.state {
-        case .raining:    return .rainCyan.opacity(glowPulsed ? 0.70 : 0.40)
-        case .noRainSoon: return .sunGlow.opacity(glowPulsed ? 0.55 : 0.30)
-        default:          return .clear
+        case .raining:
+            return .rainCyan.opacity(glowPulsed ? 0.70 : 0.40)
+        case .noRainSoon:
+            let icon = WeatherIcon(from: viewModel.weatherIcon)
+            if icon.isSunny       { return .sunGlow.opacity(glowPulsed ? 0.55 : 0.30) }
+            if icon.isPartlyCloudy { return .sunGlow.opacity(glowPulsed ? 0.28 : 0.14) }
+            return .clear
+        default:
+            return .clear
         }
     }
 
     private func startGlowAnimation() {
         glowPulsed = false
-        let duration: Double = (viewModel.state.conditionText == "no rain in sight") ? 3.0 : 2.0
+        let duration: Double
+        switch viewModel.state {
+        case .raining:    duration = 2.0
+        case .noRainSoon:
+            let icon = WeatherIcon(from: viewModel.weatherIcon)
+            duration = (icon.isSunny || icon.isPartlyCloudy) ? 3.0 : 0
+        default:          duration = 0
+        }
+        guard duration > 0 else { return }
         withAnimation(.easeInOut(duration: duration).repeatForever(autoreverses: true)) {
             glowPulsed = true
         }
@@ -184,7 +223,7 @@ private let dropGradient = LinearGradient(
 )
 
 struct CloudView: View {
-    enum Mode { case loading, raining, rainIn, error }
+    enum Mode { case loading, raining, rainIn, error, calm }
     let mode: Mode
 
     @State private var isPulsing = false
@@ -302,6 +341,46 @@ struct SunView: View {
                 .fill(Color(red: 1, green: 200/255, blue: 60/255).opacity(0.10))
                 .frame(width: 120, height: 24)
                 .offset(y: 66)
+        }
+        .frame(width: 260, height: 200)
+    }
+}
+
+// MARK: - Partly cloudy illustration
+
+struct PartlyCloudyView: View {
+    var body: some View {
+        ZStack {
+            // soft sun glow behind cloud
+            Circle()
+                .fill(RadialGradient(colors: [.sunGlow.opacity(0.35), .clear],
+                                     center: .center, startRadius: 0, endRadius: 56))
+                .frame(width: 112, height: 112)
+                .offset(x: 56, y: 28)
+
+            // sun disc (lower-right, partially hidden behind cloud)
+            Circle()
+                .fill(RadialGradient(colors: [.sunLight, .sunMid, .sunDeep],
+                                     center: UnitPoint(x: 0.4, y: 0.35),
+                                     startRadius: 0, endRadius: 30))
+                .frame(width: 60, height: 60)
+                .offset(x: 56, y: 28)
+
+            // main cloud (upper-left), slightly smaller than full CloudView
+            ZStack {
+                Circle().frame(width: 58).offset(x: 22, y: 4).opacity(0.85)
+                Circle().frame(width: 50).offset(x: -26, y: 9).opacity(0.90)
+                Circle().frame(width: 68).offset(x: 0, y: -9)
+                RoundedRectangle(cornerRadius: 15).frame(width: 110, height: 30).offset(y: 13)
+            }
+            .foregroundStyle(cloudGradient)
+            .offset(x: -28, y: -18)
+
+            // specular highlight on cloud
+            Ellipse()
+                .fill(.white.opacity(0.50))
+                .frame(width: 38, height: 18)
+                .offset(x: -33, y: -42)
         }
         .frame(width: 260, height: 200)
     }
