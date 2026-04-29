@@ -3,6 +3,7 @@ import Foundation
 struct WeatherRecord: Decodable {
     let timestamp: Date
     let precipitation: Double?
+    let temperature: Double?
 }
 
 struct WeatherResponse: Decodable {
@@ -14,7 +15,12 @@ enum WeatherError: Error {
     case noData
 }
 
-func fetchMinutesUntilRain(lat: Double, lon: Double) async throws -> Int? {
+struct WeatherData {
+    let minutesUntilRain: Int?
+    let temperature: Double?
+}
+
+func fetchWeatherData(lat: Double, lon: Double) async throws -> WeatherData {
     let now = Date()
     let twoHoursLater = now.addingTimeInterval(2 * 3600)
 
@@ -35,13 +41,15 @@ func fetchMinutesUntilRain(lat: Double, lon: Double) async throws -> Int? {
     decoder.dateDecodingStrategy = .iso8601
     let result = try decoder.decode(WeatherResponse.self, from: data)
 
+    let temperature = result.weather.first?.temperature
+
     let futureRecords = result.weather.filter { $0.timestamp >= now }
     guard let rainRecord = futureRecords.first(where: { ($0.precipitation ?? 0) > 0 }) else {
-        return nil
+        return WeatherData(minutesUntilRain: nil, temperature: temperature)
     }
 
-    let minutes = Int(rainRecord.timestamp.timeIntervalSince(now) / 60)
-    return max(0, minutes)
+    let minutes = max(0, Int(rainRecord.timestamp.timeIntervalSince(now) / 60))
+    return WeatherData(minutesUntilRain: minutes, temperature: temperature)
 }
 
 private func iso8601(_ date: Date) -> String {

@@ -12,6 +12,7 @@ enum AppState {
 @Observable
 class RainViewModel {
     var state: AppState = .loading
+    var temperature: Double? = nil
     private var locationManager = LocationManager()
     private var refreshTask: Task<Void, Never>?
 
@@ -46,11 +47,12 @@ class RainViewModel {
         }
 
         do {
-            let minutes = try await fetchMinutesUntilRain(
+            let data = try await fetchWeatherData(
                 lat: coordinate.latitude,
                 lon: coordinate.longitude
             )
-            if let minutes {
+            temperature = data.temperature
+            if let minutes = data.minutesUntilRain {
                 state = minutes == 0 ? .raining : .rainIn(minutes)
             } else {
                 state = .noRainSoon

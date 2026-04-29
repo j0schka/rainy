@@ -12,13 +12,27 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             darkNavy.ignoresSafeArea()
-            circleContent
+            VStack(spacing: 24) {
+                circleContent
+                temperatureLabel
+            }
         }
         .onAppear { viewModel.startUpdating() }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 Task { await viewModel.fetchRain() }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var temperatureLabel: some View {
+        if let temp = viewModel.temperature {
+            Text(String(format: "%.0f°C", temp))
+                .font(.system(size: 28, weight: .medium, design: .rounded))
+                .foregroundStyle(.white.opacity(0.7))
+        } else {
+            Color.clear.frame(height: 28)
         }
     }
 
