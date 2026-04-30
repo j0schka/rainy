@@ -325,7 +325,7 @@ struct SunView: View {
             Ellipse().fill(.white.opacity(0.45)).frame(width: 28, height: 16).offset(x: -12, y: -20)
 
             Ellipse()
-                .fill(.sunGlow.opacity(0.10))
+                .fill(Color.sunGlow.opacity(0.10))
                 .frame(width: 110, height: 22)
                 .offset(y: 58)
         }
@@ -624,7 +624,8 @@ struct WindView: View {
                 Canvas { ctx, _ in
                     let t = tl.date.timeIntervalSinceReferenceDate
                     for l in lines {
-                        let sway = 4.0 + 4.0 * sin(t * 2 * .pi / 2.5 + l.delay * 2 * .pi)
+                        let phase: Double = t * 2 * Double.pi / 2.5 + l.delay * 2 * Double.pi
+                        let sway: CGFloat = CGFloat(4.0 + 4.0 * sin(phase))
                         let col = Color.white.opacity(0.75 * l.op)
                         let style = StrokeStyle(lineWidth: l.w, lineCap: .round)
                         var line = Path()
