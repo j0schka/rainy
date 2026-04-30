@@ -275,8 +275,8 @@ struct CloudBaseView: View {
         ZStack {
             Circle().fill(g).opacity(0.88).frame(width: 104*scale).offset(x: ox+38*scale, y: oy-18*scale)
             Circle().fill(g).opacity(0.92).frame(width:  88*scale).offset(x: ox-32*scale, y: oy-10*scale)
-            Circle().fill(g)              .frame(width: 116*scale).offset(x: ox+ 8*scale, y: oy-36*scale)
-            Circle().fill(g).opacity(0.80).frame(width:  68*scale).offset(x: ox+58*scale, y: oy- 4*scale)
+            Circle().fill(g)              .frame(width: 116*scale).offset(x: ox+8*scale, y: oy-36*scale)
+            Circle().fill(g).opacity(0.80).frame(width:  68*scale).offset(x: ox+58*scale, y: oy-4*scale)
             RoundedRectangle(cornerRadius: 21*scale).fill(g)
                 .frame(width: 128*scale, height: 42*scale)
                 .offset(x: ox+18*scale, y: oy+7*scale)
