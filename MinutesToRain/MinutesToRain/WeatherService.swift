@@ -5,6 +5,7 @@ struct WeatherData {
     let isCurrentlyRaining: Bool
     let temperature: Double?
     let weatherIcon: String?
+    let rainfallIntensity: Double?   // l/m² per 5-min radar frame (= mm); nil when dry
 }
 
 private struct WeatherRecord: Decodable {
@@ -50,11 +51,12 @@ func fetchWeatherData(lat: Double, lon: Double) async throws -> WeatherData {
         minutesUntilChange: radar.minutesUntilChange,
         isCurrentlyRaining: radar.isRaining,
         temperature: weather.temperature,
-        weatherIcon: weather.icon
+        weatherIcon: weather.icon,
+        rainfallIntensity: radar.intensity
     )
 }
 
-private func fetchRadarData(lat: Double, lon: Double, now: Date) async throws -> (minutesUntilChange: Int?, isRaining: Bool) {
+private func fetchRadarData(lat: Double, lon: Double, now: Date) async throws -> (minutesUntilChange: Int?, isRaining: Bool, intensity: Double?) {
     var components = URLComponents(string: "https://api.brightsky.dev/radar")!
     components.queryItems = [
         URLQueryItem(name: "lat", value: String(format: "%.4f", lat)),
@@ -88,14 +90,22 @@ private func fetchRadarData(lat: Double, lon: Double, now: Date) async throws ->
     let isRaining = currentFrame.map(hasRain) ?? false
     let futureFrames = sorted.filter { $0.timestamp > now }
 
+    func radarValue(in frame: RadarRecord) -> Double {
+        guard y < frame.precipitation5.count,
+              x < frame.precipitation5[y].count else { return 0 }
+        return Double(frame.precipitation5[y][x]) / 10.0  // 1/10 mm → mm = l/m²
+    }
+
     if isRaining {
         let stopFrame = futureFrames.first(where: { !hasRain(in: $0) })
         let minutes = stopFrame.map { max(0, Int($0.timestamp.timeIntervalSince(now) / 60)) }
-        return (minutes, true)
+        let intensity = currentFrame.map(radarValue)
+        return (minutes, true, intensity)
     } else {
         let startFrame = futureFrames.first(where: { hasRain(in: $0) })
         let minutes = startFrame.map { max(0, Int($0.timestamp.timeIntervalSince(now) / 60)) }
-        return (minutes, false)
+        let intensity = startFrame.map(radarValue)
+        return (minutes, false, intensity)
     }
 }
 

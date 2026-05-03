@@ -9,6 +9,10 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
 
     override init() {
+        if let lat = UserDefaults.standard.object(forKey: "loc.lat") as? Double,
+           let lon = UserDefaults.standard.object(forKey: "loc.lon") as? Double {
+            coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        }
         super.init()
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyKilometer
@@ -24,7 +28,10 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        coordinate = locations.last?.coordinate
+        guard let loc = locations.last else { return }
+        coordinate = loc.coordinate
+        UserDefaults.standard.set(loc.coordinate.latitude,  forKey: "loc.lat")
+        UserDefaults.standard.set(loc.coordinate.longitude, forKey: "loc.lon")
         manager.stopUpdatingLocation()
     }
 

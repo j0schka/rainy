@@ -98,7 +98,9 @@ struct ContentView: View {
             background
             if case .raining = viewModel.state { RainView() }
             mainContent
-            GlassCardView(temperature: viewModel.temperature, state: viewModel.state)
+            GlassCardView(temperature: viewModel.temperature,
+                          intensity: viewModel.rainfallIntensity,
+                          state: viewModel.state)
         }
         .onAppear { viewModel.startUpdating() }
         .onChange(of: scenePhase) { _, newPhase in
@@ -817,6 +819,7 @@ struct RainView: View {
 
 private struct GlassCardView: View {
     let temperature: Double?
+    let intensity: Double?
     let state: AppState
 
     private var showData: Bool {
@@ -844,6 +847,24 @@ private struct GlassCardView: View {
                     }
                 }
                 Spacer()
+                if showData, let mm = intensity {
+                    VStack(alignment: .center, spacing: 2) {
+                        Text("RAIN INTENSITY")
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.4))
+                            .kerning(1.0)
+                        HStack(alignment: .lastTextBaseline, spacing: 3) {
+                            Text(mm < 10 ? String(format: "%.1f", mm) : "\(Int(mm))")
+                                .font(.system(size: 32, weight: .bold, design: .rounded))
+                                .foregroundStyle(.white)
+                            Text("l/m²")
+                                .font(.system(size: 13, weight: .medium, design: .rounded))
+                                .foregroundStyle(.white.opacity(0.6))
+                                .padding(.bottom, 5)
+                        }
+                    }
+                    Spacer()
+                }
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("UPDATES")
                         .font(.system(size: 11, weight: .semibold, design: .rounded))
