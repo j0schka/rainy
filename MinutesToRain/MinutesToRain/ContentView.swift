@@ -116,17 +116,16 @@ struct ContentView: View {
         Button {
             showRadar = true
         } label: {
-            HStack(spacing: 7) {
+            HStack(spacing: 8) {
                 Image(systemName: "map.fill")
-                    .font(.system(size: 13, weight: .semibold))
-                Text("Radar")
-                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .font(.system(size: 14, weight: .semibold))
+                Text("Regenradar")
+                    .font(.system(size: 16, weight: .semibold, design: .rounded))
             }
-            .foregroundStyle(.white.opacity(0.85))
-            .padding(.horizontal, 18)
-            .padding(.vertical, 9)
-            .background(.white.opacity(0.10), in: Capsule())
-            .overlay(Capsule().stroke(.white.opacity(0.18), lineWidth: 1))
+            .foregroundStyle(Color(red: 18/255, green: 8/255, blue: 46/255))
+            .padding(.horizontal, 24)
+            .padding(.vertical, 12)
+            .background(Color(red: 91/255, green: 200/255, blue: 245/255), in: Capsule())
         }
         .disabled(viewModel.coordinate == nil)
         .opacity(viewModel.coordinate == nil ? 0.4 : 1.0)
