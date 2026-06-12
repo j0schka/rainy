@@ -13,6 +13,8 @@
 		A1000021 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000025 /* LocationManager.swift */; };
 		A1000022 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000026 /* WeatherService.swift */; };
 		A1000023 /* RainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000027 /* RainViewModel.swift */; };
+		A1000028 /* RadarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100002A /* RadarService.swift */; };
+		A1000029 /* RadarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100002B /* RadarView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +25,8 @@
 		A1000025 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		A1000026 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		A1000027 /* RainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainViewModel.swift; sourceTree = "<group>"; };
+		A100002A /* RadarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarService.swift; sourceTree = "<group>"; };
+		A100002B /* RadarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +48,8 @@
 				A1000025 /* LocationManager.swift */,
 				A1000026 /* WeatherService.swift */,
 				A1000027 /* RainViewModel.swift */,
+				A100002A /* RadarService.swift */,
+				A100002B /* RadarView.swift */,
 				A1000006 /* Assets.xcassets */,
 			);
 			path = MinutesToRain;
@@ -139,6 +145,8 @@
 				A1000021 /* LocationManager.swift in Sources */,
 				A1000022 /* WeatherService.swift in Sources */,
 				A1000023 /* RainViewModel.swift in Sources */,
+				A1000028 /* RadarService.swift in Sources */,
+				A1000029 /* RadarView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

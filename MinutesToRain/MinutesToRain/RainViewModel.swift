@@ -16,6 +16,7 @@ class RainViewModel {
     var temperature: Double? = nil
     var weatherIcon: String? = nil
     var rainfallIntensity: Double? = nil
+    var coordinate: CLLocationCoordinate2D? { locationManager.coordinate }
     private var locationManager = LocationManager()
     private var refreshTask: Task<Void, Never>?
 

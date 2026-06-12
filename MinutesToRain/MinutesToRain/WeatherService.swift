@@ -93,7 +93,7 @@ private func fetchRadarData(lat: Double, lon: Double, now: Date) async throws ->
     func radarValue(in frame: RadarRecord) -> Double {
         guard y < frame.precipitation5.count,
               x < frame.precipitation5[y].count else { return 0 }
-        return Double(frame.precipitation5[y][x]) / 10.0  // 1/10 mm → mm = l/m²
+        return Double(frame.precipitation5[y][x]) / 100.0  // 0.01 mm units → mm = l/m²
     }
 
     if isRaining {

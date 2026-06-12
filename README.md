@@ -29,7 +29,23 @@ Data refreshes automatically every 5 minutes, and again whenever the app returns
 
 A condition string appears below the number in every state: *"rain approaching"*, *"currently raining"*, *"no rain in sight"*, *"locating…"*, or *"check location"*.
 
+The header reads **"Minutes To Rain"** — or **"Minutes To Rain Stop"** while it is raining, since the number then counts down to the rain ending.
+
 The temperature in the bottom card shows `—` in the loading and error states.
+
+---
+
+## Rain radar
+
+A **Radar** button below the condition text opens a fullscreen radar map (inspired by RainToday):
+
+- **Map** — dark-styled MapKit view centred on your location, radar overlay rendered from DWD DE1200 composite data (1 km, 5-minute frames)
+- **Slider** — scrub from **1 hour into the past to 1 hour into the future** in 5-minute steps; frames after "now" come from the DWD RV nowcast
+- **Play button** — animates through all 25 frames in a loop
+- **Time label** — shows the frame's clock time plus a relative badge (*−30 min*, *now*, *+45 min · forecast*)
+- **Legend** — light-to-heavy intensity scale (pale blue → blue → green → yellow → orange → red)
+
+Radar frames are fetched from Bright Sky's `/radar` endpoint in `compressed` format (base64 + zlib, 16-bit little-endian grid) covering ~150 km around your position, decoded on-device and drawn as a geo-referenced overlay. The DE1200 grid is polar stereographic; the overlay uses an affine corner fit, accurate to well below the radar's 1 km resolution at this scale.
 
 ---
 
@@ -69,5 +85,7 @@ MinutesToRain/
     ├── ContentView.swift       — all UI: background, illustrations, layout, glass card
     ├── RainViewModel.swift     — state machine, refresh loop
     ├── LocationManager.swift   — CoreLocation wrapper
-    └── WeatherService.swift    — Bright Sky API calls
+    ├── WeatherService.swift    — Bright Sky API calls
+    ├── RadarService.swift      — radar frame fetching + zlib/grid decoding
+    └── RadarView.swift         — fullscreen radar map, slider, playback
 ```

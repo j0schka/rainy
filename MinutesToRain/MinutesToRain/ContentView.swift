@@ -91,6 +91,7 @@ private extension AppState {
 struct ContentView: View {
     @State private var viewModel = RainViewModel()
     @State private var glowPulsed = false
+    @State private var showRadar = false
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -106,6 +107,29 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active { Task { await viewModel.fetchRain() } }
         }
+        .fullScreenCover(isPresented: $showRadar) {
+            RadarView(coordinate: viewModel.coordinate)
+        }
+    }
+
+    private var radarButton: some View {
+        Button {
+            showRadar = true
+        } label: {
+            HStack(spacing: 7) {
+                Image(systemName: "map.fill")
+                    .font(.system(size: 13, weight: .semibold))
+                Text("Radar")
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+            }
+            .foregroundStyle(.white.opacity(0.85))
+            .padding(.horizontal, 18)
+            .padding(.vertical, 9)
+            .background(.white.opacity(0.10), in: Capsule())
+            .overlay(Capsule().stroke(.white.opacity(0.18), lineWidth: 1))
+        }
+        .disabled(viewModel.coordinate == nil)
+        .opacity(viewModel.coordinate == nil ? 0.4 : 1.0)
     }
 
     private var background: some View {
@@ -126,7 +150,7 @@ struct ContentView: View {
 
     private var mainContent: some View {
         VStack(spacing: 0) {
-            AppHeaderView()
+            AppHeaderView(isRaining: isRaining)
             Spacer()
             illustrationView
                 .shadow(color: glowColor, radius: 35, y: 20)
@@ -138,6 +162,8 @@ struct ContentView: View {
                 .font(.system(size: 17, weight: .regular, design: .rounded))
                 .foregroundStyle(.white.opacity(0.60))
                 .padding(.top, 6)
+            radarButton
+                .padding(.top, 18)
             Spacer()
             Color.clear.frame(height: 160)
         }
@@ -165,6 +191,11 @@ struct ContentView: View {
         case .rainIn:   CloudView(mode: .rainIn)
         case .error:    CloudView(mode: .error)
         }
+    }
+
+    private var isRaining: Bool {
+        if case .raining = viewModel.state { return true }
+        return false
     }
 
     private var glowColor: Color {
@@ -250,12 +281,15 @@ struct ContentView: View {
 // MARK: - Header
 
 private struct AppHeaderView: View {
+    let isRaining: Bool
+
     var body: some View {
-        Text("MinutesToRain")
+        Text(isRaining ? "Minutes To Rain Stop" : "Minutes To Rain")
             .font(.system(size: 17, weight: .bold, design: .rounded))
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .padding(.top, 58)
+            .animation(.default, value: isRaining)
     }
 }
 
