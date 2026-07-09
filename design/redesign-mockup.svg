@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="780" viewBox="0 0 1180 780" font-family="'SF Pro Rounded', ui-rounded, 'Segoe UI', system-ui, sans-serif">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="0%" r="110%">
+      <stop offset="0%" stop-color="#2A1260"/>
+      <stop offset="100%" stop-color="#12082E"/>
+    </radialGradient>
+    <clipPath id="screen1"><rect x="40"  y="60" width="340" height="660" rx="42"/></clipPath>
+    <clipPath id="screen2"><rect x="420" y="60" width="340" height="660" rx="42"/></clipPath>
+    <clipPath id="screen3"><rect x="800" y="60" width="340" height="660" rx="42"/></clipPath>
+  </defs>
+
+  <rect width="1180" height="780" fill="#0B0620"/>
+  <text x="590" y="38" text-anchor="middle" fill="#FFFFFF" font-size="22" font-weight="700">Design-Vorschlag: Zahl im Vordergrund, Illustration ton-in-ton im Hintergrund</text>
+
+  <!-- ============ SCREEN 1: rain approaching ============ -->
+  <g clip-path="url(#screen1)">
+    <rect x="40" y="60" width="340" height="660" fill="url(#bg)"/>
+    <text x="210" y="122" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="700">Minutes To Rain</text>
+
+    <!-- subtle cloud: barely lifts off the background -->
+    <g transform="translate(210,300)">
+      <circle cx="38"  cy="-18" r="52" fill="#33206B"/>
+      <circle cx="-32" cy="-10" r="44" fill="#33206B"/>
+      <circle cx="8"   cy="-36" r="58" fill="#372372"/>
+      <circle cx="58"  cy="-4"  r="34" fill="#311E66"/>
+      <rect x="-46" y="-14" width="128" height="42" rx="21" fill="#33206B"/>
+      <ellipse cx="-4" cy="-54" rx="38" ry="18" fill="#FFFFFF" opacity="0.05"/>
+      <!-- static drops, also subtle -->
+      <ellipse cx="-22" cy="55" rx="5" ry="11" fill="#3B2A78"/>
+      <ellipse cx="0"   cy="65" rx="5" ry="11" fill="#3B2A78"/>
+      <ellipse cx="22"  cy="55" rx="5" ry="11" fill="#3B2A78"/>
+    </g>
+
+    <!-- BIG number in front of the cloud -->
+    <g transform="translate(210,300)">
+      <text x="-12" y="38" text-anchor="middle" fill="#FFFFFF" font-size="132" font-weight="800">35</text>
+      <text x="88" y="36" text-anchor="middle" fill="#FFFFFF" opacity="0.8" font-size="30" font-weight="600">min</text>
+    </g>
+    <text x="210" y="415" text-anchor="middle" fill="#FFFFFF" opacity="0.6" font-size="16">rain approaching</text>
+
+    <!-- radar button -->
+    <rect x="146" y="448" width="128" height="40" rx="20" fill="#5BC8F5"/>
+    <text x="210" y="474" text-anchor="middle" fill="#12082E" font-size="15" font-weight="700">Radar</text>
+
+    <!-- glass card -->
+    <rect x="40" y="590" width="340" height="130" rx="24" fill="#FFFFFF" opacity="0.08"/>
+    <text x="70" y="626" fill="#FFFFFF" opacity="0.4" font-size="10" letter-spacing="1">TEMPERATURE</text>
+    <text x="70" y="662" fill="#FFFFFF" font-size="30" font-weight="700">18°C</text>
+    <text x="350" y="626" text-anchor="end" fill="#FFFFFF" opacity="0.4" font-size="10" letter-spacing="1">UPDATES</text>
+    <text x="350" y="650" text-anchor="end" fill="#FFFFFF" opacity="0.6" font-size="13">every 5 min</text>
+  </g>
+  <text x="210" y="755" text-anchor="middle" fill="#9A8FC4" font-size="15">Regen erwartet — Zahl groß VOR der dezenten Wolke</text>
+
+  <!-- ============ SCREEN 2: currently raining ============ -->
+  <g clip-path="url(#screen2)">
+    <rect x="420" y="60" width="340" height="660" fill="url(#bg)"/>
+    <!-- rain streaks, subtle -->
+    <g stroke="#5BC8F5" stroke-width="1.5" opacity="0.18">
+      <line x1="460" y1="90"  x2="466" y2="150"/>
+      <line x1="530" y1="200" x2="536" y2="260"/>
+      <line x1="600" y1="80"  x2="606" y2="140"/>
+      <line x1="680" y1="170" x2="686" y2="230"/>
+      <line x1="730" y1="330" x2="736" y2="390"/>
+      <line x1="480" y1="420" x2="486" y2="480"/>
+      <line x1="640" y1="470" x2="646" y2="530"/>
+      <line x1="560" y1="560" x2="566" y2="620"/>
+      <line x1="710" y1="600" x2="716" y2="660"/>
+    </g>
+    <text x="590" y="122" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="700">Minutes To Rain Stop</text>
+
+    <!-- subtle cloud with subtle animated drops -->
+    <g transform="translate(590,300)">
+      <circle cx="38"  cy="-18" r="52" fill="#33206B"/>
+      <circle cx="-32" cy="-10" r="44" fill="#33206B"/>
+      <circle cx="8"   cy="-36" r="58" fill="#372372"/>
+      <circle cx="58"  cy="-4"  r="34" fill="#311E66"/>
+      <rect x="-46" y="-14" width="128" height="42" rx="21" fill="#33206B"/>
+      <ellipse cx="-4" cy="-54" rx="38" ry="18" fill="#FFFFFF" opacity="0.05"/>
+      <ellipse cx="-22" cy="58" rx="5" ry="11" fill="#3E2C80"/>
+      <ellipse cx="0"   cy="70" rx="5" ry="11" fill="#3E2C80"/>
+      <ellipse cx="22"  cy="58" rx="5" ry="11" fill="#3E2C80"/>
+      <ellipse cx="-10" cy="80" rx="5" ry="11" fill="#37257A"/>
+      <ellipse cx="12"  cy="84" rx="5" ry="11" fill="#37257A"/>
+    </g>
+
+    <g transform="translate(590,300)">
+      <text x="-12" y="38" text-anchor="middle" fill="#FFFFFF" font-size="132" font-weight="800">12</text>
+      <text x="86" y="36" text-anchor="middle" fill="#FFFFFF" opacity="0.8" font-size="30" font-weight="600">min</text>
+    </g>
+    <text x="590" y="415" text-anchor="middle" fill="#FFFFFF" opacity="0.6" font-size="16">currently raining</text>
+
+    <rect x="526" y="448" width="128" height="40" rx="20" fill="#5BC8F5"/>
+    <text x="590" y="474" text-anchor="middle" fill="#12082E" font-size="15" font-weight="700">Radar</text>
+
+    <rect x="420" y="590" width="340" height="130" rx="24" fill="#FFFFFF" opacity="0.08"/>
+    <text x="450" y="626" fill="#FFFFFF" opacity="0.4" font-size="10" letter-spacing="1">TEMPERATURE</text>
+    <text x="450" y="662" fill="#FFFFFF" font-size="30" font-weight="700">14°C</text>
+    <text x="730" y="626" text-anchor="end" fill="#FFFFFF" opacity="0.4" font-size="10" letter-spacing="1">RAIN INTENSITY</text>
+    <text x="730" y="655" text-anchor="end" fill="#FFFFFF" font-size="22" font-weight="700">0.4 <tspan font-size="12" opacity="0.6">l/m²</tspan></text>
+  </g>
+  <text x="590" y="755" text-anchor="middle" fill="#9A8FC4" font-size="15">Es regnet — Minuten bis Regenstopp groß im Vordergrund</text>
+
+  <!-- ============ SCREEN 3: no rain in sight ============ -->
+  <g clip-path="url(#screen3)">
+    <rect x="800" y="60" width="340" height="660" fill="url(#bg)"/>
+    <text x="970" y="122" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="700">Minutes To Rain</text>
+
+    <!-- subtle sun: tone-on-tone, barely visible -->
+    <g transform="translate(970,295)">
+      <circle r="58" fill="#3A2574"/>
+      <ellipse cx="-14" cy="-22" rx="18" ry="10" fill="#FFFFFF" opacity="0.05"/>
+      <g stroke="#3E2A7C" stroke-width="6" stroke-linecap="round">
+        <line x1="0"   y1="-78" x2="0"    y2="-96"/>
+        <line x1="55"  y1="-55" x2="68"   y2="-68"/>
+        <line x1="78"  y1="0"   x2="96"   y2="0"/>
+        <line x1="55"  y1="55"  x2="68"   y2="68"/>
+        <line x1="0"   y1="78"  x2="0"    y2="96"/>
+        <line x1="-55" y1="55"  x2="-68"  y2="68"/>
+        <line x1="-78" y1="0"   x2="-96"  y2="0"/>
+        <line x1="-55" y1="-55" x2="-68"  y2="-68"/>
+      </g>
+    </g>
+
+    <!-- BIG status text in front of the sun -->
+    <text x="970" y="285" text-anchor="middle" fill="#FFFFFF" font-size="44" font-weight="800">no rain</text>
+    <text x="970" y="335" text-anchor="middle" fill="#FFFFFF" font-size="44" font-weight="800">in sight</text>
+
+    <rect x="906" y="448" width="128" height="40" rx="20" fill="#5BC8F5"/>
+    <text x="970" y="474" text-anchor="middle" fill="#12082E" font-size="15" font-weight="700">Radar</text>
+
+    <rect x="800" y="590" width="340" height="130" rx="24" fill="#FFFFFF" opacity="0.08"/>
+    <text x="830" y="626" fill="#FFFFFF" opacity="0.4" font-size="10" letter-spacing="1">TEMPERATURE</text>
+    <text x="830" y="662" fill="#FFFFFF" font-size="30" font-weight="700">24°C</text>
+    <text x="1110" y="626" text-anchor="end" fill="#FFFFFF" opacity="0.4" font-size="10" letter-spacing="1">UPDATES</text>
+    <text x="1110" y="650" text-anchor="end" fill="#FFFFFF" opacity="0.6" font-size="13">every 5 min</text>
+  </g>
+  <text x="970" y="755" text-anchor="middle" fill="#9A8FC4" font-size="15">Kein Regen — Status groß VOR der dezenten Sonne</text>
+
+  <!-- phone outlines -->
+  <rect x="40"  y="60" width="340" height="660" rx="42" fill="none" stroke="#3A2E5E" stroke-width="3"/>
+  <rect x="420" y="60" width="340" height="660" rx="42" fill="none" stroke="#3A2E5E" stroke-width="3"/>
+  <rect x="800" y="60" width="340" height="660" rx="42" fill="none" stroke="#3A2E5E" stroke-width="3"/>
+</svg>
