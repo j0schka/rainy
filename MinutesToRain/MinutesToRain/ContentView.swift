@@ -31,6 +31,8 @@ private extension Color {
     static let bgTop           = Color(red: 42/255,  green: 18/255, blue:  96/255)
     static let rainCyan        = Color(red: 91/255,  green: 200/255, blue: 245/255)
     static let periwinkle      = Color(red: 123/255, green: 143/255, blue: 255/255)
+    // Tone-on-tone tint for background illustrations (multiplied onto grayscale)
+    static let illustrationTint = Color(red: 61/255, green: 38/255, blue: 120/255)
     // Cloud — day
     static let cloudLight      = Color(red: 240/255, green: 244/255, blue: 255/255)
     static let cloudMid        = Color(red: 200/255, green: 210/255, blue: 242/255)
@@ -90,7 +92,6 @@ private extension AppState {
 
 struct ContentView: View {
     @State private var viewModel = RainViewModel()
-    @State private var glowPulsed = false
     @State private var showRadar = false
     @Environment(\.scenePhase) private var scenePhase
 
@@ -151,21 +152,71 @@ struct ContentView: View {
         VStack(spacing: 0) {
             AppHeaderView(isRaining: isRaining)
             Spacer()
-            illustrationView
-                .shadow(color: glowColor, radius: 35, y: 20)
-                .onAppear { startGlowAnimation() }
-                .onChange(of: viewModel.state.conditionText) { startGlowAnimation() }
-            numberStack
-                .padding(.top, -8)
-            Text(viewModel.state.conditionText)
-                .font(.system(size: 17, weight: .regular, design: .rounded))
-                .foregroundStyle(.white.opacity(0.60))
-                .padding(.top, 6)
+            ZStack {
+                illustrationView
+                    .saturation(0)
+                    .colorMultiply(Color.illustrationTint)
+                overlayText
+            }
+            if showConditionCaption {
+                Text(viewModel.state.conditionText)
+                    .font(.system(size: 17, weight: .regular, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.60))
+                    .padding(.top, 6)
+            }
             radarButton
                 .padding(.top, 18)
             Spacer()
             Color.clear.frame(height: 160)
         }
+    }
+
+    // The big status text replaces the caption in the no-rain state.
+    private var showConditionCaption: Bool {
+        if case .noRainSoon = viewModel.state { return false }
+        return true
+    }
+
+    @ViewBuilder
+    private var overlayText: some View {
+        switch viewModel.state {
+        case .loading:
+            EmptyView()
+        case .rainIn(let minutes):
+            bigNumber("\(minutes)", unit: "min")
+        case .raining(let stopsIn):
+            if let stopsIn {
+                bigNumber("\(stopsIn)", unit: "min")
+            } else {
+                bigNumber("—", unit: nil)
+            }
+        case .noRainSoon:
+            Text("no rain\nin sight")
+                .font(.system(size: 42, weight: .heavy, design: .rounded))
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.35), radius: 12, y: 4)
+        case .error:
+            bigNumber("?", unit: nil)
+        }
+    }
+
+    private func bigNumber(_ value: String, unit: String?) -> some View {
+        HStack(alignment: .lastTextBaseline, spacing: 8) {
+            Text(value)
+                .font(.system(size: 120, weight: .heavy, design: .rounded))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+            if let unit {
+                Text(unit)
+                    .font(.system(size: 30, weight: .semibold, design: .rounded))
+                    .opacity(0.8)
+                    .padding(.bottom, 20)
+            }
+        }
+        .foregroundStyle(.white)
+        .shadow(color: .black.opacity(0.35), radius: 12, y: 4)
     }
 
     @ViewBuilder
@@ -195,85 +246,6 @@ struct ContentView: View {
     private var isRaining: Bool {
         if case .raining = viewModel.state { return true }
         return false
-    }
-
-    private var glowColor: Color {
-        switch viewModel.state {
-        case .raining:
-            return .rainCyan.opacity(glowPulsed ? 0.70 : 0.40)
-        case .noRainSoon:
-            let icon = WeatherIcon(from: viewModel.weatherIcon)
-            switch icon {
-            case .clearDay:
-                return .sunGlow.opacity(glowPulsed ? 0.55 : 0.30)
-            case .clearNight:
-                return .moonMid.opacity(glowPulsed ? 0.40 : 0.20)
-            case .partlyCloudyDay:
-                return .sunGlow.opacity(glowPulsed ? 0.28 : 0.14)
-            case .partlyCloudyNight:
-                return .moonMid.opacity(glowPulsed ? 0.20 : 0.10)
-            case .rain, .snow, .sleet:
-                return .rainCyan.opacity(glowPulsed ? 0.30 : 0.15)
-            case .cloudy, .wind, .fog, .other:
-                return .periwinkle.opacity(glowPulsed ? 0.20 : 0.10)
-            }
-        default:
-            return .clear
-        }
-    }
-
-    private func startGlowAnimation() {
-        glowPulsed = false
-        let duration: Double
-        switch viewModel.state {
-        case .raining: duration = 2.0
-        case .noRainSoon:
-            let icon = WeatherIcon(from: viewModel.weatherIcon)
-            switch icon {
-            case .clearDay, .clearNight:             duration = 3.0
-            case .partlyCloudyDay, .partlyCloudyNight: duration = 3.5
-            case .cloudy, .other:                    duration = 0
-            default:                                 duration = 2.5
-            }
-        default: duration = 0
-        }
-        guard duration > 0 else { return }
-        withAnimation(.easeInOut(duration: duration).repeatForever(autoreverses: true)) {
-            glowPulsed = true
-        }
-    }
-
-    @ViewBuilder
-    private var numberStack: some View {
-        let (num, sub) = numberAndSub
-        HStack(alignment: .lastTextBaseline, spacing: 8) {
-            if let num {
-                Text(num)
-                    .font(.system(size: 88, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
-                    .monospacedDigit()
-                if let sub {
-                    Text(sub)
-                        .font(.system(size: 26, weight: .medium, design: .rounded))
-                        .foregroundStyle(.white.opacity(0.80))
-                        .padding(.bottom, 14)
-                }
-            } else {
-                Color.clear.frame(height: 88)
-            }
-        }
-    }
-
-    private var numberAndSub: (String?, String?) {
-        switch viewModel.state {
-        case .loading:              return (nil, nil)
-        case .rainIn(let m):        return ("\(m)", "min")
-        case .raining(let s):
-            if let s { return ("\(s)", "min") }
-            return ("—", nil)
-        case .noRainSoon:           return ("—", nil)
-        case .error:                return ("?", nil)
-        }
     }
 }
 
@@ -826,7 +798,7 @@ struct RainView: View {
     private static let drops: [Drop] = (0..<90).map { _ in
         Drop(x: .random(in: 0...1), phaseOffset: .random(in: 0...1),
              speed: .random(in: 0.8...1.6), length: .random(in: 18...38),
-             opacity: .random(in: 0.12...0.30), drift: .random(in: 0.06...0.12))
+             opacity: .random(in: 0.06...0.16), drift: .random(in: 0.06...0.12))
     }
 
     var body: some View {

@@ -18,16 +18,18 @@ Data refreshes automatically every 5 minutes, and again whenever the app returns
 
 ## Display states
 
-| Illustration | Number | Background | Meaning |
+The number is the hero: it renders **large (120 pt), in front of** the weather illustration, which sits tone-on-tone in the background (grayscaled and multiplied with a muted indigo so it barely lifts off the gradient).
+
+| Illustration (subtle, behind) | Foreground | Background | Meaning |
 |---|---|---|---|
 | Cloud, pulsing | — | Calm | Loading — waiting for GPS or API |
-| Cloud with 3 static drops | **35** min | Calm | Dry — rain expected in 35 minutes |
-| Cloud with animated drops | **12** min | Cyan rain streaks | Currently raining — stops in ~12 minutes |
-| Cloud with animated drops | **—** | Cyan rain streaks | Currently raining — no stop in the next 2 hours |
-| Sun with rotating rays | **—** | Calm | Dry — no rain detected in the next 2 hours |
+| Cloud with 3 static drops | **35 min** | Calm | Dry — rain expected in 35 minutes |
+| Cloud with animated drops | **12 min** | Faint cyan rain streaks | Currently raining — stops in ~12 minutes |
+| Cloud with animated drops | **—** | Faint cyan rain streaks | Currently raining — no stop in the next 2 hours |
+| Weather illustration (sun, moon, …) | **"no rain in sight"** (large) | Calm | Dry — no rain detected in the next 2 hours |
 | Cloud, desaturated | **?** | Calm | Error — location denied or API unreachable |
 
-A condition string appears below the number in every state: *"rain approaching"*, *"currently raining"*, *"no rain in sight"*, *"locating…"*, or *"check location"*.
+A small condition string appears below in every state except no-rain (where the status itself is the big text): *"rain approaching"*, *"currently raining"*, *"locating…"*, or *"check location"*.
 
 The header reads **"Minutes To Rain"** — or **"Minutes To Rain Stop"** while it is raining, since the number then counts down to the rain ending.
 
@@ -52,10 +54,9 @@ Radar frames are fetched from Bright Sky's `/radar` endpoint in `compressed` for
 ## UI
 
 - **Background** — deep indigo radial gradient (`#12082E` → `#2A1260`)
-- **Cloud** — layered SwiftUI shapes with a light-to-dark gradient and a specular highlight
-- **Sun** — rotating rays + warm gradient disc, shown when no rain is expected
-- **Rain streaks** — full-screen cyan streaks (`#5BC8F5`) animated via `Canvas` + `TimelineView`
-- **Pulsing glow** — cyan shadow behind the cloud when raining; gold behind the sun
+- **Illustrations** — layered SwiftUI shapes, rendered tone-on-tone (`saturation(0)` + `colorMultiply` with muted indigo `#3D2678`) so the big number stays the focus
+- **Number / status** — 120 pt heavy rounded white, soft drop shadow, overlaid on the illustration
+- **Rain streaks** — full-screen cyan streaks (`#5BC8F5`) at low opacity, animated via `Canvas` + `TimelineView`
 - **Glass card** — pinned to bottom, shows temperature, refresh cadence, and data source
 
 ---
