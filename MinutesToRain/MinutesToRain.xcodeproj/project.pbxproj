@@ -280,6 +280,7 @@
 				DEVELOPMENT_TEAM = ZR4H9PTM48;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Time To Rain";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Rainy needs your location to check local rain forecasts.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -310,6 +311,7 @@
 				DEVELOPMENT_TEAM = ZR4H9PTM48;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Time To Rain";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Rainy needs your location to check local rain forecasts.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
