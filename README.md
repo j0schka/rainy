@@ -6,6 +6,12 @@ Deep indigo background. A cloud illustration. A number below it.
 
 ---
 
+## Support
+
+Questions, bug reports, or feature requests? Please [open an issue on GitHub](https://github.com/j0schka/rainy/issues) — that's the fastest way to reach the developer. This is a free, open-source app with no account and no ads; support is provided on a best-effort basis.
+
+---
+
 ## How it works
 
 On launch, MinutesToRain requests your GPS location and fetches precipitation radar data from [Bright Sky](https://brightsky.dev) — a free, open API powered by the German Weather Service (DWD). The radar has **1 km spatial resolution** and **5-minute time slots**, giving timing accuracy of roughly ±5 minutes.
