@@ -58,8 +58,12 @@ struct RadarView: View {
                 lat: coordinate.latitude, lon: coordinate.longitude)
             frameIndex = Double(nowIndex(in: result.frames))
             data = result
+        } catch WeatherError.noData {
+            // The German Weather Service's radar only covers Germany and
+            // neighboring regions; this is expected outside that footprint.
+            errorText = "Rain radar isn't available at this location.\nCoverage is limited to Germany and neighboring regions."
         } catch {
-            errorText = "Radar data unavailable"
+            errorText = "Radar data unavailable. Please try again."
         }
     }
 
@@ -182,6 +186,8 @@ struct RadarView: View {
             Text(text)
                 .font(.system(size: 17, design: .rounded))
                 .foregroundStyle(.white.opacity(0.7))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
             Button("Retry") {
                 errorText = nil
                 Task { await load() }

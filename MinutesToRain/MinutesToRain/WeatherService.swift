@@ -44,15 +44,19 @@ enum WeatherError: Error {
 
 func fetchWeatherData(lat: Double, lon: Double) async throws -> WeatherData {
     let now = Date()
-    async let radarResult = fetchRadarData(lat: lat, lon: lon, now: now)
+    // Radar coverage is limited to Germany and neighboring regions; outside
+    // it, `fetchRadarData` throws `.noData`. That shouldn't take down the
+    // temperature, which comes from a separate, globally covered station.
+    async let radarResult: (minutesUntilChange: Int?, isRaining: Bool, intensity: Double?)? =
+        try? fetchRadarData(lat: lat, lon: lon, now: now)
     async let tempResult = fetchTemperature(lat: lat, lon: lon, now: now)
     let (radar, weather) = try await (radarResult, tempResult)
     return WeatherData(
-        minutesUntilChange: radar.minutesUntilChange,
-        isCurrentlyRaining: radar.isRaining,
+        minutesUntilChange: radar?.minutesUntilChange,
+        isCurrentlyRaining: radar?.isRaining ?? false,
         temperature: weather.temperature,
         weatherIcon: weather.icon,
-        rainfallIntensity: radar.intensity
+        rainfallIntensity: radar?.intensity
     )
 }
 
