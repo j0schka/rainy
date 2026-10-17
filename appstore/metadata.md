@@ -51,7 +51,7 @@ AUF EINEN BLICK
 • Kostenlos, ohne Konto, ohne Werbung
 
 DATENQUELLE & ABDECKUNG
-Die Radardaten stammen vom Deutschen Wetterdienst (DWD), bereitgestellt über die freie Bright-Sky-Schnittstelle. Die Vorhersage funktioniert in Deutschland und den angrenzenden Regionen des DWD-Radarnetzes.
+Die Radardaten stammen vom Deutschen Wetterdienst (DWD), bereitgestellt über die freie Bright-Sky-Schnittstelle. In Deutschland und den angrenzenden Regionen nutzt die App das DWD-Radar; weltweit greift sie auf die 15-Minuten-Vorhersage von Open-Meteo und das Radar von RainViewer zurück.
 
 Dein Standort wird ausschließlich zur Abfrage der lokalen Radardaten verwendet und nicht gespeichert oder weitergegeben.
 ```
@@ -81,7 +81,7 @@ AT A GLANCE
 • Free, no account, no ads
 
 DATA SOURCE & COVERAGE
-Radar data comes from the German Weather Service (DWD), served via the free Bright Sky API. Forecasts work in Germany and neighbouring regions covered by the DWD radar network.
+Radar data comes from the German Weather Service (DWD), served via the free Bright Sky API. In Germany and neighbouring regions the app uses DWD radar; everywhere else it falls back to Open-Meteo's 15-minute forecast and RainViewer radar.
 
 Your location is used solely to query local radar data and is never stored or shared.
 ```

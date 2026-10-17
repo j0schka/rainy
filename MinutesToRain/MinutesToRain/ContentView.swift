@@ -102,7 +102,8 @@ struct ContentView: View {
             mainContent
             GlassCardView(temperature: viewModel.temperature,
                           intensity: viewModel.rainfallIntensity,
-                          state: viewModel.state)
+                          state: viewModel.state,
+                          source: viewModel.dataSource)
         }
         .onAppear { viewModel.startUpdating() }
         .onChange(of: scenePhase) { _, newPhase in
@@ -826,6 +827,7 @@ private struct GlassCardView: View {
     let temperature: Double?
     let intensity: Double?
     let state: AppState
+    let source: RainDataSource
 
     private var showData: Bool {
         if case .loading = state { return false }
@@ -891,7 +893,7 @@ private struct GlassCardView: View {
                     .fill(Color.rainCyan)
                     .frame(width: 8, height: 8)
                     .shadow(color: .rainCyan, radius: 4)
-                Text("Bright Sky · DWD radar · 1 km / 5 min")
+                Text(source.label)
                     .font(.system(size: 13, design: .rounded))
                     .foregroundStyle(.white.opacity(0.4))
             }

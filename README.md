@@ -8,7 +8,7 @@ Deep indigo background. A cloud illustration. A number below it.
 
 ## Support
 
-Questions, bug reports, or feature requests? Please [open an issue on GitHub](https://github.com/j0schka/rainy/issues) — that's the fastest way to reach the developer. This is a free, open-source app with no account and no ads; support is provided on a best-effort basis.
+Support page: **https://j0schka.github.io/rainy/support.html** (source in [`docs/`](docs/)). Questions, bug reports, or feature requests: email joschkafriedag@gmail.com or [open an issue on GitHub](https://github.com/j0schka/rainy/issues). This is a free, open-source app with no account and no ads; support is provided on a best-effort basis.
 
 ---
 
@@ -79,7 +79,7 @@ Radar frames are fetched from Bright Sky's `/radar` endpoint in `compressed` for
 
 [Bright Sky](https://brightsky.dev) — free, no API key required. Rain timing uses the `/radar` endpoint (5-minute RADOLAN nowcast + 2-hour forecast). Temperature uses the `/weather` endpoint (DWD MOSMIX forecast). Both are fetched concurrently on each refresh.
 
-Coverage is limited to Germany and neighbouring regions served by the DWD radar network. Outside this area the app will show **?**.
+DWD radar coverage is limited to Germany and neighbouring regions. Outside that area the app falls back to worldwide sources: [Open-Meteo](https://open-meteo.com) `minutely_15` precipitation for the countdown and temperature (15-minute resolution), and [RainViewer](https://www.rainviewer.com) radar tiles (past 2 hours, zoom ≤ 7, upscaled on deeper zoom) for the radar map. The glass card shows which source is active.
 
 ---
 

@@ -1,48 +1,46 @@
-# Notes for App Review — resubmission
+# Notes for App Review — resubmission (build 8)
 
-## Guideline 1.5 — Support URL (fixed, no action needed in App Store Connect)
+## Guideline 1.5 — Support URL
 
-The Support URL (`https://github.com/j0schka/rainy`) previously landed on a
-developer-facing technical README with no visible support info. The README
-now leads with a "Support" section linking to GitHub Issues
-(`https://github.com/j0schka/rainy/issues`) for questions and bug reports.
-The Support URL field itself doesn't need to change.
+**Action in App Store Connect:** change the Support URL to
 
-## Guideline 2.1(a) — Regenradar error
+    https://j0schka.github.io/rainy/support.html
+
+This is a dedicated support page with a contact email, a link to GitHub
+Issues, an FAQ and the privacy policy. Its source is in `docs/support.html`.
+Optionally, set the Privacy Policy URL to
+`https://j0schka.github.io/rainy/privacy.html`.
+
+## Guideline 2.1(a) — "radar data wasn't available"
 
 ### Root cause
 
-"Regenradar" uses the German Weather Service's (DWD) precipitation radar via
-the free Bright Sky API. That radar has no data outside Germany and its
-immediate neighboring countries. The review device was located outside that
-coverage area, so the radar screen received an empty response and showed an
-error.
+The app only used radar data from the German Weather Service (DWD), which
+covers Germany and neighboring countries. On the review device (outside that
+area), both the rain countdown and the radar map had no data.
 
-### What changed in this build
+### Fix in this build
 
-- The radar screen now shows a clear, friendly message when there's no radar
-  coverage for the current location, instead of a generic-looking error.
-- The main screen no longer fails outright when only radar data is missing —
-  it still shows temperature and falls back to "no rain in sight" so the app
-  never looks broken outside the coverage area.
+- **Rain countdown:** outside DWD coverage, the app now uses Open-Meteo's
+  worldwide 15-minute precipitation forecast. It shows real "minutes until
+  rain/rain stops" values and temperature everywhere. The source label at the
+  bottom of the screen shows which provider is active.
+- **Radar map:** outside DWD coverage, the radar screen now shows RainViewer's
+  global radar composite (last 2 hours, animated).
+- Tested in the iOS Simulator with the location set to Cupertino, CA and to
+  Berlin, Germany.
 
-### For the reviewer (paste into "Notes for Review" in App Store Connect)
+### "Notes for Review" text (paste into App Store Connect)
 
-To fully verify live rain detection and the animated radar map, please set
-the test device's location to somewhere in Germany, for example:
-
-    Berlin: 52.5200, 13.4050
-
-(Settings > Privacy & Security > Location Services > System Services >
-custom location, or via a GPX file in Xcode if testing in Simulator.)
-
-Outside that coverage area the app is expected to show temperature only and
-"no rain in sight" on the main screen, and a "coverage limited to Germany
-and neighboring regions" message on the Regenradar screen — this is intended
-behavior, not a bug.
-
-### Alternative
-
-If a reviewer note isn't preferred, consider restricting territory
-availability under Pricing and Availability to Germany, Austria,
-Switzerland, and other DWD-covered countries instead.
+> Thank you for the feedback. This build fixes both issues:
+>
+> 1. Support URL: updated to https://j0schka.github.io/rainy/support.html,
+>    a support page with contact email, FAQ and privacy policy.
+>
+> 2. Radar data: previously the app only used German Weather Service radar,
+>    which is not available outside Germany. The app now works worldwide.
+>    Outside Germany it uses a global precipitation forecast (Open-Meteo) for
+>    the rain countdown and a global radar map (RainViewer). No special
+>    location setup is needed. The minute countdown only appears when rain is
+>    forecast within the next 2 hours. Otherwise the app shows "no rain in
+>    sight", which is the correct result for dry weather.

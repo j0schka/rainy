@@ -16,6 +16,7 @@ class RainViewModel {
     var temperature: Double? = nil
     var weatherIcon: String? = nil
     var rainfallIntensity: Double? = nil
+    var dataSource: RainDataSource = .dwdRadar
     var coordinate: CLLocationCoordinate2D? { locationManager.coordinate }
     private var locationManager = LocationManager()
     private var refreshTask: Task<Void, Never>?
@@ -60,6 +61,7 @@ class RainViewModel {
             temperature = data.temperature
             weatherIcon = data.weatherIcon
             rainfallIntensity = data.rainfallIntensity
+            dataSource = data.source
             let center = UNUserNotificationCenter.current()
             if data.isCurrentlyRaining {
                 state = .raining(stopsIn: data.minutesUntilChange)
