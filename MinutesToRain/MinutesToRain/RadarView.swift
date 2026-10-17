@@ -12,7 +12,7 @@ struct RadarView: View {
     let coordinate: CLLocationCoordinate2D?
 
     @Environment(\.dismiss) private var dismiss
-    @State private var data: RadarMapData?
+    @State private var content: RadarContent?
     @State private var errorText: String?
     @State private var frameIndex: Double = 0
     @State private var isPlaying = false
@@ -21,12 +21,12 @@ struct RadarView: View {
         ZStack {
             Color.radarBgDeep.ignoresSafeArea()
 
-            if let data, let coordinate {
-                RadarMapView(data: data,
+            if let content, let coordinate {
+                RadarMapView(content: content,
                              center: coordinate,
                              frameIndex: Int(frameIndex))
                     .ignoresSafeArea()
-                controls(for: data)
+                controls(for: content)
             } else if let errorText {
                 errorView(errorText)
             } else {
@@ -39,11 +39,11 @@ struct RadarView: View {
         }
         .task { await load() }
         .task(id: isPlaying) {
-            guard isPlaying, let data else { return }
+            guard isPlaying, let content else { return }
             while !Task.isCancelled {
                 try? await Task.sleep(for: .milliseconds(400))
                 guard !Task.isCancelled else { return }
-                frameIndex = Double((Int(frameIndex) + 1) % data.frames.count)
+                frameIndex = Double((Int(frameIndex) + 1) % content.timestamps.count)
             }
         }
     }
@@ -56,33 +56,39 @@ struct RadarView: View {
         do {
             let result = try await fetchRadarMap(
                 lat: coordinate.latitude, lon: coordinate.longitude)
-            frameIndex = Double(nowIndex(in: result.frames))
-            data = result
-        } catch WeatherError.noData {
-            // The German Weather Service's radar only covers Germany and
-            // neighboring regions; this is expected outside that footprint.
-            errorText = "Rain radar isn't available at this location.\nCoverage is limited to Germany and neighboring regions."
+            show(.dwd(result))
         } catch {
-            errorText = "Radar data unavailable. Please try again."
+            // The German Weather Service's radar only covers Germany and
+            // neighboring regions; elsewhere, use RainViewer's global composite.
+            do {
+                show(.tiles(try await fetchTileRadar()))
+            } catch {
+                errorText = "Radar data unavailable. Please try again."
+            }
         }
     }
 
+    private func show(_ result: RadarContent) {
+        frameIndex = Double(nowIndex(in: result.timestamps))
+        content = result
+    }
+
     /// Index of the frame closest to the current time.
-    private func nowIndex(in frames: [RadarFrame]) -> Int {
+    private func nowIndex(in timestamps: [Date]) -> Int {
         let now = Date()
-        return frames.indices.min(by: {
-            abs(frames[$0].timestamp.timeIntervalSince(now)) <
-            abs(frames[$1].timestamp.timeIntervalSince(now))
+        return timestamps.indices.min(by: {
+            abs(timestamps[$0].timeIntervalSince(now)) <
+            abs(timestamps[$1].timeIntervalSince(now))
         }) ?? 0
     }
 
     // MARK: Controls
 
-    private func controls(for data: RadarMapData) -> some View {
+    private func controls(for content: RadarContent) -> some View {
         VStack {
             Spacer()
             VStack(spacing: 14) {
-                timeLabel(for: data)
+                timeLabel(for: content)
 
                 HStack(spacing: 16) {
                     Button {
@@ -97,18 +103,16 @@ struct RadarView: View {
 
                     VStack(spacing: 4) {
                         Slider(value: $frameIndex,
-                               in: 0...Double(data.frames.count - 1),
+                               in: 0...Double(max(1, content.timestamps.count - 1)),
                                step: 1,
                                onEditingChanged: { editing in
                                    if editing { isPlaying = false }
                                })
                             .tint(Color.radarCyan)
                         HStack {
-                            Text("−1 h")
+                            Text(relativeLabel(content.timestamps.first))
                             Spacer()
-                            Text("now")
-                            Spacer()
-                            Text("+1 h")
+                            Text(relativeLabel(content.timestamps.last))
                         }
                         .font(.system(size: 11, weight: .medium, design: .rounded))
                         .foregroundStyle(.white.opacity(0.45))
@@ -116,6 +120,9 @@ struct RadarView: View {
                 }
 
                 legend
+                Text(content.attribution)
+                    .font(.system(size: 10, weight: .medium, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.35))
             }
             .padding(.horizontal, 20)
             .padding(.top, 18)
@@ -128,9 +135,19 @@ struct RadarView: View {
         }
     }
 
-    private func timeLabel(for data: RadarMapData) -> some View {
-        let frame = data.frames[Int(frameIndex)]
-        let minutes = Int((frame.timestamp.timeIntervalSinceNow / 60).rounded())
+    private func relativeLabel(_ date: Date?) -> String {
+        guard let date else { return "" }
+        let minutes = Int((date.timeIntervalSinceNow / 60).rounded())
+        if abs(minutes) <= 5 { return "now" }
+        let text = abs(minutes) >= 60
+            ? "\(Int((Double(abs(minutes)) / 60).rounded())) h"
+            : "\(abs(minutes)) min"
+        return (minutes < 0 ? "−" : "+") + text
+    }
+
+    private func timeLabel(for content: RadarContent) -> some View {
+        let timestamp = content.timestamps[Int(frameIndex)]
+        let minutes = Int((timestamp.timeIntervalSinceNow / 60).rounded())
         let badge: String
         let badgeColor: Color
         if minutes < -2 {
@@ -144,7 +161,7 @@ struct RadarView: View {
             badgeColor = .radarCyan
         }
         return HStack(spacing: 10) {
-            Text(frame.timestamp, format: .dateTime.hour().minute())
+            Text(timestamp, format: .dateTime.hour().minute())
                 .font(.system(size: 22, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
                 .monospacedDigit()
@@ -218,10 +235,33 @@ struct RadarView: View {
     }
 }
 
+// MARK: - Radar content
+
+enum RadarContent {
+    /// DWD composite decoded on-device (Germany and neighboring regions).
+    case dwd(RadarMapData)
+    /// RainViewer global composite, rendered as map tiles.
+    case tiles(TileRadarData)
+
+    var timestamps: [Date] {
+        switch self {
+        case .dwd(let data):   return data.frames.map(\.timestamp)
+        case .tiles(let data): return data.frames.map(\.timestamp)
+        }
+    }
+
+    var attribution: String {
+        switch self {
+        case .dwd:   return "Radar: Deutscher Wetterdienst via Bright Sky"
+        case .tiles: return "Radar: RainViewer"
+        }
+    }
+}
+
 // MARK: - MapKit wrapper
 
 private struct RadarMapView: UIViewRepresentable {
-    let data: RadarMapData
+    let content: RadarContent
     let center: CLLocationCoordinate2D
     let frameIndex: Int
 
@@ -233,32 +273,118 @@ private struct RadarMapView: UIViewRepresentable {
         map.overrideUserInterfaceStyle = .dark
         map.pointOfInterestFilter = .excludingAll
         map.showsUserLocation = true
-        map.setRegion(
-            MKCoordinateRegion(center: center,
-                               latitudinalMeters: 180_000,
-                               longitudinalMeters: 180_000),
-            animated: false)
-        context.coordinator.currentImage = data.frames[frameIndex].image
-        map.addOverlay(RadarOverlay(corners: data.corners))
+        context.coordinator.frameIndex = frameIndex
+
+        switch content {
+        case .dwd(let data):
+            map.setRegion(
+                MKCoordinateRegion(center: center,
+                                   latitudinalMeters: 180_000,
+                                   longitudinalMeters: 180_000),
+                animated: false)
+            context.coordinator.currentImage = data.frames[frameIndex].image
+            map.addOverlay(RadarOverlay(corners: data.corners))
+        case .tiles(let data):
+            // RainViewer tiles top out at zoom 7 (~1 km/px), so start wider.
+            map.setRegion(
+                MKCoordinateRegion(center: center,
+                                   latitudinalMeters: 400_000,
+                                   longitudinalMeters: 400_000),
+                animated: false)
+            // One overlay per frame; only the current one is visible, so
+            // scrubbing and playback don't reload tiles.
+            let overlays = data.frames.enumerated().map { index, frame in
+                RainViewerTileOverlay(host: data.host, path: frame.path, index: index)
+            }
+            map.addOverlays(overlays, level: .aboveRoads)
+        }
         return map
     }
 
     func updateUIView(_ map: MKMapView, context: Context) {
-        let image = data.frames[frameIndex].image
-        context.coordinator.currentImage = image
-        context.coordinator.renderer?.image = image
+        let coordinator = context.coordinator
+        coordinator.frameIndex = frameIndex
+        switch content {
+        case .dwd(let data):
+            let image = data.frames[frameIndex].image
+            coordinator.currentImage = image
+            coordinator.renderer?.image = image
+        case .tiles:
+            for (index, renderer) in coordinator.tileRenderers {
+                renderer.alpha = index == frameIndex ? 0.8 : 0
+            }
+        }
     }
 
     final class Coordinator: NSObject, MKMapViewDelegate {
         var currentImage: CGImage?
+        var frameIndex = 0
         weak var renderer: RadarOverlayRenderer?
+        var tileRenderers: [Int: MKTileOverlayRenderer] = [:]
 
         func mapView(_ mapView: MKMapView,
                      rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+            if let tiles = overlay as? RainViewerTileOverlay {
+                let renderer = MKTileOverlayRenderer(tileOverlay: tiles)
+                renderer.alpha = tiles.index == frameIndex ? 0.8 : 0
+                tileRenderers[tiles.index] = renderer
+                return renderer
+            }
             let renderer = RadarOverlayRenderer(overlay: overlay)
             renderer.image = currentImage
             self.renderer = renderer
             return renderer
+        }
+    }
+}
+
+// MARK: - RainViewer tiles
+
+/// RainViewer serves tiles up to zoom 7 only. Deeper zoom levels are
+/// produced by cropping and upscaling the covering zoom-7 tile.
+private final class RainViewerTileOverlay: MKTileOverlay {
+    static let maxSourceZoom = 7
+    let host: String
+    let path: String
+    let index: Int
+
+    init(host: String, path: String, index: Int) {
+        self.host = host
+        self.path = path
+        self.index = index
+        super.init(urlTemplate: nil)
+        canReplaceMapContent = false
+        tileSize = CGSize(width: 256, height: 256)
+    }
+
+    private func sourceURL(z: Int, x: Int, y: Int) -> URL {
+        // 512 px source tiles, color scheme 2, smoothed, snow shown.
+        URL(string: "\(host)\(path)/512/\(z)/\(x)/\(y)/2/1_1.png")!
+    }
+
+    override func loadTile(at tilePath: MKTileOverlayPath,
+                           result: @escaping (Data?, Error?) -> Void) {
+        let dz = max(0, tilePath.z - Self.maxSourceZoom)
+        let url = sourceURL(z: tilePath.z - dz, x: tilePath.x >> dz, y: tilePath.y >> dz)
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data, dz > 0 else { return result(data, error) }
+            result(Self.crop(data, dz: dz, x: tilePath.x, y: tilePath.y), nil)
+        }.resume()
+    }
+
+    private static func crop(_ data: Data, dz: Int, x: Int, y: Int) -> Data? {
+        guard let source = UIImage(data: data)?.cgImage else { return nil }
+        let divisions = 1 << dz
+        let side = CGFloat(source.width) / CGFloat(divisions)
+        let rect = CGRect(x: CGFloat(x % divisions) * side,
+                          y: CGFloat(y % divisions) * side,
+                          width: side, height: side).integral
+        guard let piece = source.cropping(to: rect) else { return nil }
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let size = CGSize(width: 256, height: 256)
+        return UIGraphicsImageRenderer(size: size, format: format).pngData { _ in
+            UIImage(cgImage: piece).draw(in: CGRect(origin: .zero, size: size))
         }
     }
 }

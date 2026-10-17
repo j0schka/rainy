@@ -163,3 +163,43 @@ private func zlibInflate(_ data: Data, expectedSize: Int) -> Data? {
     guard written == expectedSize else { return nil }
     return output
 }
+
+// MARK: - RainViewer (worldwide fallback)
+
+/// Global radar composite from RainViewer, used outside DWD coverage.
+/// Past frames only (≈ −2 h … now, 10-minute steps); served as map tiles.
+struct TileRadarData {
+    struct Frame {
+        let timestamp: Date
+        let path: String
+    }
+    let host: String
+    let frames: [Frame]
+}
+
+private struct RainViewerResponse: Decodable {
+    struct Frame: Decodable {
+        let time: TimeInterval
+        let path: String
+    }
+    struct Radar: Decodable {
+        let past: [Frame]
+        let nowcast: [Frame]?
+    }
+    let host: String
+    let radar: Radar
+}
+
+func fetchTileRadar() async throws -> TileRadarData {
+    let url = URL(string: "https://api.rainviewer.com/public/weather-maps.json")!
+    let (data, response) = try await URLSession.shared.data(from: url)
+    guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+        throw WeatherError.invalidResponse
+    }
+    let result = try JSONDecoder().decode(RainViewerResponse.self, from: data)
+    let frames = (result.radar.past + (result.radar.nowcast ?? []))
+        .sorted { $0.time < $1.time }
+        .map { TileRadarData.Frame(timestamp: Date(timeIntervalSince1970: $0.time), path: $0.path) }
+    guard !frames.isEmpty else { throw WeatherError.noData }
+    return TileRadarData(host: result.host, frames: frames)
+}

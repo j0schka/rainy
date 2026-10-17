@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Time To Rain — Support</title>
+<style>
+  :root { --bg1: #12082E; --bg2: #2A1260; --text: #F0F4FF; --muted: rgba(240,244,255,.65); --cyan: #5BC8F5; --card: rgba(255,255,255,.07); --line: rgba(255,255,255,.12); }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; color: var(--text); background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%) fixed, var(--bg1);
+         font: 17px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 680px; margin: 0 auto; padding: 56px 16px 64px; }
+  h1 { font-size: 34px; margin: 0 0 4px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  .lead { color: var(--muted); margin: 0 0 32px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 22px 22px 18px; margin-bottom: 16px; }
+  p, li { color: var(--muted); }
+  a { color: var(--cyan); }
+  .contact a { font-weight: 600; font-size: 19px; }
+  dt { font-weight: 600; color: var(--text); margin-top: 14px; }
+  dd { margin: 4px 0 0; color: var(--muted); }
+  footer { margin-top: 32px; font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Time To Rain</h1>
+  <p class="lead">Support · Hilfe — minutes until it rains, at a glance.</p>
+
+  <section class="contact">
+    <h2>Contact / Kontakt</h2>
+    <p>Questions, bug reports or feature requests? Write an email. I usually reply within a few days.<br>
+       Fragen, Fehlerberichte oder Wünsche? Schreib mir einfach eine E-Mail.</p>
+    <p><a href="mailto:joschkafriedag@gmail.com?subject=Time%20To%20Rain%20Support">joschkafriedag@gmail.com</a></p>
+    <p>You can also open an issue on GitHub: <a href="https://github.com/j0schka/rainy/issues">github.com/j0schka/rainy/issues</a></p>
+  </section>
+
+  <section>
+    <h2>FAQ</h2>
+    <dl>
+      <dt>Where does the weather data come from?</dt>
+      <dd>In Germany and neighboring countries, the app uses precipitation radar from the German Weather Service (DWD) via Bright Sky, with 1 km resolution and 5-minute steps. Everywhere else it uses the Open-Meteo 15-minute forecast, and the radar map comes from RainViewer.</dd>
+
+      <dt>The app shows “?” instead of a number.</dt>
+      <dd>The app needs your location to look up rain nearby. Check Settings › Privacy &amp; Security › Location Services › Time To Rain and allow “While Using the App”. Also check your internet connection.</dd>
+
+      <dt>I don’t get rain alerts.</dt>
+      <dd>Allow notifications in Settings › Notifications › Time To Rain. Alerts are sent about 15 minutes before rain is expected, and only while the app has fetched a forecast recently.</dd>
+
+      <dt>How accurate is the countdown?</dt>
+      <dd>About ±5 minutes with DWD radar data. Elsewhere it is based on a 15-minute forecast, so expect roughly ±15 minutes.</dd>
+
+      <dt>Does the app collect my data?</dt>
+      <dd>No. There is no account, no tracking and no ads. See the <a href="privacy.html">privacy policy</a>.</dd>
+    </dl>
+  </section>
+
+  <footer>
+    <a href="privacy.html">Privacy Policy / Datenschutz</a> · Time To Rain is a free, open-source app.
+  </footer>
+</main>
+</body>
+</html>
